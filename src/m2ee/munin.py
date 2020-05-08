@@ -189,6 +189,18 @@ def get_stats_from_runtime(m2):
             stats['memory']['eden'] = memorypools[1]['usage']
             stats['memory']['survivor'] = memorypools[2]['usage']
             stats['memory']['tenured'] = memorypools[3]['usage']
+        elif java_version == 11:
+            # Every pool whose name starts with 'code' is part of the code cache (there are several in Java 11)
+            stats['memory']['code'] = sum([_['usage'] for _ in memorypools if _['name'].lower().startswith('code')])
+            for pool in memorypools:
+                if pool['name'].lower() == 'metaspace':
+                    # Metaspace is the new name for Permanent starting from Java 8
+                    stats['memory']['permanent'] = pool['usage']
+                else:
+                    # All other pool names start quite predictably
+                    for name in ['eden', 'survivor', 'tenured']:
+                        if pool['name'].lower().startswith(name):
+                            stats['memory'][name] = pool['usage']
         else:
             stats['memory']['code'] = memorypools[0]['usage']
             stats['memory']['permanent'] = memorypools[2]['usage']
