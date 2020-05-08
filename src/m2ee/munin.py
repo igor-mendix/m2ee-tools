@@ -115,9 +115,14 @@ def print_values(m2, name):
 def guess_java_version(m2, runtime_version, stats):
     about = m2.client.about(timeout=5)
     if 'java_version' in about:
-        java_version = about['java_version']
-        java_major, java_minor, _ = java_version.split('.')
-        return int(java_minor)
+        java_version = about['java_version'].split('.')
+        # Older Java versions may have insignificant '1' as their major version, we then need minor version
+        if int(java_version[0]) == 1:
+            return int(java_version[1])
+        else:
+            return int(java_version[0])
+
+    # If java_version is not present, we must be on runtime version 6 or 5
     if runtime_version // 6:
         return 8
     if runtime_version // 5:
