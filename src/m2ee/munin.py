@@ -527,7 +527,7 @@ def print_jvm_process_memory_values(name, stats, pid, java_version):
     for k in ['tenured', 'survivor', 'eden']:
         print('%s.value %s' % (k, memory[k]))
     if java_version is not None and java_version >= 8:
-        print("javaheap.value %s" % (javaheap - memory['used_heap'] - memory['code']))
+        print("javaheap.value %s" % (javaheap - memory['used_heap']))
     else:
         print("javaheap.value %s" %
               (javaheap - memory['used_heap'] - memory['code'] - memory['permanent']))
